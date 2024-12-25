@@ -15,7 +15,7 @@ pipeline {
     }
     stage('Checkout Git Branch') {
       steps {
-        git branch: 'main', credentialsId: 'github-credentials', url: : 'https://github.com/HammadNazir048/Tocs.git'
+        git branch: 'main', credentialsId: 'github-credentials', url:  'https://github.com/HammadNazir048/Tocs.git'
       }
     }
     stage('Build Application') {

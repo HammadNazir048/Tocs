@@ -1,13 +1,15 @@
 pipeline {
   agent any
   environment {
-    AZURE_RESOURCE_GROUP = 'python-webap_group'
-    WEBAPP_NAME = "python-webap"
-    PACKAGE_NAME = "python-app-package.zip"
+    AZURE_RESOURCE_GROUP = 'my-resource-group'  // Replace with your actual Azure resource group name
+    WEBAPP_NAME = "my-webapp"                   // Replace with your actual Web App name
+    PACKAGE_NAME = "my-flask-app-v1.0.zip"      // The name of your deployment package
   }
+  stages {
+    // Skip workspace cleanup
     stage('Checkout Git Branch') {
       steps {
-        git branch: 'main', credentialsId: 'github-credentials', url:  'https://github.com/HammadNazir048/Tocs.git'
+        git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'
       }
     }
     stage('Build Application') {
@@ -19,9 +21,9 @@ pipeline {
     stage('Package Application') {
       steps {
         script {
-          /* Zip all contents inside code folder, excluding the root folder(code folder itself).*/
+          // Zip the contents inside the 'code' folder
           sh "cd code && zip -r ../${PACKAGE_NAME} ./*"
-          // Print the contents of the current directory to verify the zip
+          // Print the contents of the zip file to verify
           sh "zipinfo ${PACKAGE_NAME}"
         }
       }
@@ -31,11 +33,10 @@ pipeline {
         script {
           withCredentials([azureServicePrincipal('jenkins-pipeline-sp')]) {
             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-            // sh 'az account show'
+            // Deploy to Azure Web App
             sh 'az webapp deploy --resource-group ${AZURE_RESOURCE_GROUP} --name ${WEBAPP_NAME} --src-path "${WORKSPACE}/${PACKAGE_NAME}"'
           }
         }
-        // azureCLI commands: [[exportVariablesString: '', script: 'az account show']], principalCredentialId: 'jenkins-pipeline-sp'
       }
     }
   }

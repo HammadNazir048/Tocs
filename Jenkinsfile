@@ -1,16 +1,18 @@
 pipeline {
   agent any
+  
+    stages {
+    stage('Checkout Git Branch') {
+      steps {
+        git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'
+      }
   environment {
     AZURE_RESOURCE_GROUP = 'my-resource-group'  // Replace with your actual Azure resource group name
     WEBAPP_NAME = "my-webapp"                   // Replace with your actual Web App name
     PACKAGE_NAME = "my-flask-app-v1.0.zip"      // The name of your deployment package
     PATH = "/usr/bin/python3:$PATH"             // Add Python3 to PATH
   }
-  stages {
-    stage('Checkout Git Branch') {
-      steps {
-        git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'
-      }
+
     }
     stage('Build Application') {
       steps {

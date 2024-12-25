@@ -8,9 +8,9 @@ pipeline {
   stages {
     stage('Workspace Cleanup') {
       steps {
-        // Clean before build
-        cleanWs()
-        echo 'cleaning workspace...'
+        // Immediate cleanup, no deferred wipeout
+        cleanWs(deleteDirs: true)  // Forces immediate cleanup
+        echo 'Cleaning workspace...'
       }
     }
     stage('Checkout Git Branch') {

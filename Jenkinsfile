@@ -1,13 +1,23 @@
+#!groovy
+
 pipeline {
   agent any
   environment {
-    AZURE_RESOURCE_GROUP = 'python-webap_group'  // Change to your Azure resource group name
-    WEBAPP_NAME = "python-webap"                   // Change to your Azure Web App name
-    PACKAGE_NAME = "my-flask-app-v1.0.zip"      // Change the package name as per your choice
+    AZURE_RESOURCE_GROUP = 'python-webapp-rg'
+    WEBAPP_NAME = "python-webapp"
+    PACKAGE_NAME = "python-app-package.zip"
   }
+  stages {
+    stage('Workspace Cleanup') {
+      steps {
+        // Clean before build
+        cleanWs()
+        echo 'cleaning workspace...'
+      }
+    }
     stage('Checkout Git Branch') {
       steps {
-        git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'
+        git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/vprasadreddy/python-flask-webapp.git'
       }
     }
     stage('Build Application') {
@@ -19,9 +29,9 @@ pipeline {
     stage('Package Application') {
       steps {
         script {
-          // Zip the contents inside the 'code' folder
+          /* Zip all contents inside code folder, excluding the root folder(code folder itself).*/
           sh "cd code && zip -r ../${PACKAGE_NAME} ./*"
-          // Print the contents of the zip file to verify
+          // Print the contents of the current directory to verify the zip
           sh "zipinfo ${PACKAGE_NAME}"
         }
       }
@@ -29,13 +39,13 @@ pipeline {
     stage('Login to Azure') {
       steps {
         script {
-          // Use Azure service principal for authentication
           withCredentials([azureServicePrincipal('jenkins-pipeline-sp')]) {
             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-            // Deploy to Azure Web App
+            // sh 'az account show'
             sh 'az webapp deploy --resource-group ${AZURE_RESOURCE_GROUP} --name ${WEBAPP_NAME} --src-path "${WORKSPACE}/${PACKAGE_NAME}"'
           }
         }
+        // azureCLI commands: [[exportVariablesString: '', script: 'az account show']], principalCredentialId: 'jenkins-pipeline-sp'
       }
     }
   }

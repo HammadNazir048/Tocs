@@ -1,18 +1,9 @@
 pipeline {
   agent any
   environment {
-    // Change these environment variables as per your setup
     AZURE_RESOURCE_GROUP = 'python-webap_group'  
-    WEBAPP_NAME = "python-webap"                   
-    PACKAGE_NAME = "my-app-package.zip"        
+    WEBAPP_NAME = "python-webap"                         
   }
-  stages {
-    stage('Workspace Cleanup') {
-      steps {
-        cleanWs()
-        echo 'cleaning workspace...'
-      }
-    }
     stage('Checkout Git Branch') {
       steps {
         git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'

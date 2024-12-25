@@ -5,14 +5,6 @@ pipeline {
     WEBAPP_NAME = "python-webap"                   // Change to your Azure Web App name
     PACKAGE_NAME = "my-flask-app-v1.0.zip"      // Change the package name as per your choice
   }
-  stages {
-    stage('Workspace Cleanup') {
-      steps {
-        // Immediate cleanup, no deferred wipeout
-        cleanWs(deleteDirs: true)  // This forces immediate cleanup
-        echo 'Cleaning workspace...'
-      }
-    }
     stage('Checkout Git Branch') {
       steps {
         git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'

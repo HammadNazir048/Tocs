@@ -1,27 +1,25 @@
 pipeline {
   agent any
   environment {
-    AZURE_RESOURCE_GROUP = 'python-webap_group'
-    WEBAPP_NAME = "python-webap"
-    PACKAGE_NAME = "python-ap-package.zip"
+    AZURE_RESOURCE_GROUP = 'python-webap_group'  // Change to your Azure resource group name
+    WEBAPP_NAME = "python-webap"                   // Change to your Azure Web App name
+    PACKAGE_NAME = "my-flask-app-v1.0.zip"      // Change the package name as per your choice
   }
   stages {
     stage('Workspace Cleanup') {
       steps {
-        // Clean before build
-        cleanWs()
-        echo 'cleaning workspace...'
+        // Clean the workspace before starting the build
+        cleanWs(deleteDirs: true)  // Try using deleteDirs: true for immediate cleanup
+        echo 'Cleaning workspace...'
       }
     }
     stage('Checkout Git Branch') {
       steps {
-        // Checkout the code from the second GitHub repository
         git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/HammadNazir048/Tocs.git'
       }
     }
     stage('Build Application') {
       steps {
-        // Install dependencies
         sh 'python3 -m pip install --upgrade pip'
         sh 'pip3 install -r requirements.txt'
       }
@@ -29,9 +27,9 @@ pipeline {
     stage('Package Application') {
       steps {
         script {
-          /* Zip all contents inside the code folder, excluding the root folder (code folder itself).*/
+          // Zip the contents inside the 'code' folder
           sh "cd code && zip -r ../${PACKAGE_NAME} ./*"
-          // Print the contents of the current directory to verify the zip
+          // Print the contents of the zip file to verify
           sh "zipinfo ${PACKAGE_NAME}"
         }
       }

@@ -5,14 +5,6 @@ pipeline {
     WEBAPP_NAME = "python-webap"
     PACKAGE_NAME = "python-app-package.zip"
   }
-  stages {
-    stage('Workspace Cleanup') {
-      steps {
-        // Immediate cleanup, no deferred wipeout
-        cleanWs(deleteDirs: true)  // Forces immediate cleanup
-        echo 'Cleaning workspace...'
-      }
-    }
     stage('Checkout Git Branch') {
       steps {
         git branch: 'main', credentialsId: 'github-credentials', url:  'https://github.com/HammadNazir048/Tocs.git'

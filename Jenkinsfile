@@ -8,8 +8,8 @@ pipeline {
   stages {
     stage('Workspace Cleanup') {
       steps {
-        // Clean the workspace before starting the build
-        cleanWs(deleteDirs: true)  // Try using deleteDirs: true for immediate cleanup
+        // Immediate cleanup, no deferred wipeout
+        cleanWs(deleteDirs: true)  // This forces immediate cleanup
         echo 'Cleaning workspace...'
       }
     }
